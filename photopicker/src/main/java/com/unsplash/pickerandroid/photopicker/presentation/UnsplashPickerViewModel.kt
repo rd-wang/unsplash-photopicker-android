@@ -32,7 +32,7 @@ class UnsplashPickerViewModel constructor(private val repository: Repository) : 
      *
      * @param editText the edit text to listen to
      */
-    fun bindSearch(editText: EditText) {
+    fun bindSearch(editText: EditText, searchKey: String) {
         RxTextView.textChanges(editText)
             .debounce(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -41,8 +41,15 @@ class UnsplashPickerViewModel constructor(private val repository: Repository) : 
             }
             .observeOn(Schedulers.io())
             .switchMap { text ->
-                if (TextUtils.isEmpty(text)) repository.loadPhotos(UnsplashPhotoPicker.getPageSize())
-                else repository.searchPhotos(text.toString(), UnsplashPhotoPicker.getPageSize())
+                if (!TextUtils.isEmpty(searchKey) && TextUtils.isEmpty(text)) {
+                    repository.searchPhotos(searchKey, UnsplashPhotoPicker.getPageSize())
+                } else {
+                    if (TextUtils.isEmpty(text)) {
+                        repository.loadPhotos(UnsplashPhotoPicker.getPageSize())
+                    } else {
+                        repository.searchPhotos(text.toString(), UnsplashPhotoPicker.getPageSize())
+                    }
+                }
             }
             .subscribe(object : BaseObserver<PagedList<UnsplashPhoto>>() {
                 override fun onSuccess(data: PagedList<UnsplashPhoto>?) {

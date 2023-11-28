@@ -26,14 +26,21 @@ class MainActivity : AppCompatActivity() {
         main_recycler_view.adapter = mAdapter
         // on the pick button click, we start the library picker activity
         // we are expecting a result from it so we start it for result
-        main_pick_button.setOnClickListener {
-            startActivityForResult(
+//        main_pick_button.setOnClickListener {
+//            startActivityForResult(
+//                UnsplashPickerActivity.getStartingIntent(
+//                    this,
+//                    !main_single_radio_button.isChecked
+//                ), REQUEST_CODE
+//            )
+//        }
+        startActivityForResult(
                 UnsplashPickerActivity.getStartingIntent(
                     this,
-                    !main_single_radio_button.isChecked
+                    isMultipleSelection = true,
+                    searchKey = ""
                 ), REQUEST_CODE
             )
-        }
     }
 
     // here we are receiving the result from the picker activity

@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Photo Picker</string>
-    <string name="back">Back</string>
+    <string name="back">返回</string>
     <string name="checked">Checked</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
-    <string name="no_result">No search results</string>
+    <string name="no_result">无搜索结果</string>
     <string name="photo">Photo</string>
     <string name="photo_selected">1 photo selected</string>
     <string name="photos_selected">%1$d photos selected</string>
-    <string name="search">Search free photos</string>
-    <string name="unsplash">Unsplash</string>
+    <string name="search">搜索图片</string>
+    <string name="unsplash">全部</string>
 </resources>

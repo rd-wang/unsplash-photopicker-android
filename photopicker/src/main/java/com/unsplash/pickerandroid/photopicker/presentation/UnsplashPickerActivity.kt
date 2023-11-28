@@ -33,6 +33,8 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
 
     private var mIsMultipleSelection = false
 
+    private var mSearchKey = ""
+
     private var mCurrentState = UnsplashPickerState.IDLE
 
     private var mPreviousState = UnsplashPickerState.IDLE
@@ -41,6 +43,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_picker)
         mIsMultipleSelection = intent.getBooleanExtra(EXTRA_IS_MULTIPLE, false)
+        mSearchKey = intent.getStringExtra(SEARCH_KEY)
         // recycler view layout manager
         mLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         // recycler view adapter
@@ -63,10 +66,10 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
         unsplash_picker_done_image_view.setOnClickListener { sendPhotosAsResult() }
         // get the view model and bind search edit text
         mViewModel =
-                ViewModelProviders.of(this, Injector.createPickerViewModelFactory())
-                    .get(UnsplashPickerViewModel::class.java)
+            ViewModelProviders.of(this, Injector.createPickerViewModelFactory())
+                .get(UnsplashPickerViewModel::class.java)
         observeViewModel()
-        mViewModel.bindSearch(unsplash_picker_edit_text)
+        mViewModel.bindSearch(unsplash_picker_edit_text, mSearchKey)
     }
 
     /**
@@ -84,8 +87,8 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
         })
         mViewModel.photosLiveData.observe(this, Observer {
             unsplash_picker_no_result_text_view.visibility =
-                    if (it == null || it.isEmpty()) View.VISIBLE
-                    else View.GONE
+                if (it == null || it.isEmpty()) View.VISIBLE
+                else View.GONE
             mAdapter.submitList(it)
         })
     }
@@ -94,8 +97,8 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
         super.onConfigurationChanged(newConfig)
         // we want the recycler view to have 3 columns when in landscape and 2 in portrait
         mLayoutManager.spanCount =
-                if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) 3
-                else 2
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) 3
+            else 2
         mAdapter.notifyDataSetChanged()
     }
 
@@ -150,6 +153,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
             UnsplashPickerState.IDLE -> {
                 super.onBackPressed()
             }
+
             UnsplashPickerState.SEARCHING -> {
                 // updating states
                 mCurrentState = UnsplashPickerState.IDLE
@@ -157,6 +161,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
                 // updating ui
                 updateUiFromState()
             }
+
             UnsplashPickerState.PHOTO_SELECTED -> {
                 // updating states
                 mCurrentState = if (mPreviousState == UnsplashPickerState.SEARCHING) {
@@ -199,6 +204,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
                 mAdapter.clearSelection()
                 mAdapter.notifyDataSetChanged()
             }
+
             UnsplashPickerState.SEARCHING -> {
                 // back, cancel, done or search buttons gone
                 unsplash_picker_back_image_view.visibility = View.GONE
@@ -216,6 +222,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
                 mAdapter.clearSelection()
                 mAdapter.notifyDataSetChanged()
             }
+
             UnsplashPickerState.PHOTO_SELECTED -> {
                 // back and search buttons gone
                 unsplash_picker_back_image_view.visibility = View.GONE
@@ -236,6 +243,7 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
     companion object {
         const val EXTRA_PHOTOS = "EXTRA_PHOTOS"
         private const val EXTRA_IS_MULTIPLE = "EXTRA_IS_MULTIPLE"
+        private const val SEARCH_KEY = "SEARCH_KEY"
 
         /**
          * @param callingContext the calling context
@@ -243,9 +251,10 @@ class UnsplashPickerActivity : AppCompatActivity(), OnPhotoSelectedListener {
          *
          * @return the intent needed to come to this activity
          */
-        fun getStartingIntent(callingContext: Context, isMultipleSelection: Boolean): Intent {
+        fun getStartingIntent(callingContext: Context, isMultipleSelection: Boolean, searchKey: String): Intent {
             val intent = Intent(callingContext, UnsplashPickerActivity::class.java)
             intent.putExtra(EXTRA_IS_MULTIPLE, isMultipleSelection)
+            intent.putExtra(SEARCH_KEY, searchKey)
             return intent
         }
     }

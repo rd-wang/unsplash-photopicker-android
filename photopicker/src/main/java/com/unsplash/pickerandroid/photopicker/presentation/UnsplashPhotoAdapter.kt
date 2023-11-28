@@ -51,7 +51,7 @@ class UnsplashPhotoAdapter constructor(context: Context, private val isMultipleS
             holder.overlay.visibility =
                     if (mSelectedIndexes.contains(holder.adapterPosition)) View.VISIBLE else View.INVISIBLE
             // click listener
-            holder.itemView.setOnClickListener {
+            holder.itemView.setOnLongClickListener {
                 // selected index(es) management
                 if (mSelectedIndexes.contains(holder.adapterPosition)) {
                     mSelectedIndexes.remove(holder.adapterPosition)
@@ -64,12 +64,13 @@ class UnsplashPhotoAdapter constructor(context: Context, private val isMultipleS
                 }
                 mOnPhotoSelectedListener?.onPhotoSelected(mSelectedIndexes.size)
                 // change title text
+                false
             }
-            holder.itemView.setOnLongClickListener {
+            holder.itemView.setOnClickListener {
                 photo.urls.regular?.let {
                     mOnPhotoSelectedListener?.onPhotoLongPress(holder.imageView, it)
                 }
-                false
+
             }
         }
     }
